@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 """
-a regular function that returns a asyncio task
+Module for creating asyncio tasks with a delay using task_wait_random.
 """
+
 import asyncio
+from typing import List
 
-wait_random = __import__('0-basic_async_syntax').wait_random
 
-
-def task_wait_random(max_delay: int) -> asyncio.Task:
+async def task_wait_n(n: int, max_delay: int) -> List[float]:
     """
-    returns a asyncio.task
-    """
+    Spawns `n` asyncio tasks that call `task_wait_random` with `max_delay`.
+    Collects the results and returns them in ascending order.
 
-    return asyncio.create_task(wait_random(max_delay))
+    Args:
+        n (int): The number of tasks to spawn.
+        max_delay (int): The maximum delay for each task.
+
+    Returns:
+        List[float]: A list of delays returned by the tasks in ascending order.
+    """
+    tasks = [task_wait_random(max_delay) for _ in range(n)]
+    delays = await asyncio.gather(*tasks)
+    return sorted(delays)
+
