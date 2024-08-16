@@ -16,4 +16,3 @@ def floor(n: float) -> int:
         int: The floored value of the float.
     """
     return int(n // 1)
-
