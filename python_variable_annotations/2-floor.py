@@ -4,6 +4,7 @@
 This module provides a function to calculate the floor of a float.
 """
 
+
 def floor(n: float) -> int:
     """
     Returns the floor of the given float.
