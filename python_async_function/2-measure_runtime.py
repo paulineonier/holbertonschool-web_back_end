@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
-import time
-from basic_async_syntax import wait_n
+"""
+Module for measuring the execution time of wait_n coroutine.
+"""
 
+import time
+import asyncio
+from concurrent_coroutines import wait_n  # Adjust the import path if necessary
 
 def measure_time(n: int, max_delay: int) -> float:
     """
-    Measure execution time for wait_n, return the average time per call.
+    Measures the total execution time for wait_n(n, max_delay), and
+    returns the average time per task.
 
     Args:
-        n (int): Number of times to spawn wait_random.
-        max_delay (int): The maximum delay for wait_random.
+        n (int): The number of wait_random coroutines to spawn.
+        max_delay (int): The maximum delay for each coroutine.
 
     Returns:
-        float: The average time per call.
+        float: The average execution time per task.
     """
     start_time = time.time()
     asyncio.run(wait_n(n, max_delay))
