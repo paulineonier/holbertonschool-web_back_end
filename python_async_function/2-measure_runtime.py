@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import time
-from 0-basic_async_syntax import wait_n
+from 1-concurrent_coroutines.py import wait_n
 
 
 def measure_time(n: int, max_delay: int) -> float:
