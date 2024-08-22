@@ -18,7 +18,7 @@ class Server:
         """Load and cache the dataset from the CSV file if not already cached.
 
         Returns:
-            List[List]: A list of rows from the CSV file, where each row is a list of strings.
+            List[List]: list of rows of CSV file, each row is list of strings.
         """
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
@@ -41,32 +41,26 @@ class Server:
         assert type(page_size) is int and type(page) is int
         assert page > 0
         assert page_size > 0
-        
         self.dataset()
-        
         i = index_range(page, page_size)
-        
         if i[0] >= len(self.__dataset):
             return []
         else:
             return self.__dataset[i[0]:i[1]]
 
     def get_hyper(self, page: int = 1, page_size: int = 10) -> Dict:
-        '''Retrieve pagination metadata along with the data for a specific page.
+        '''Retrieve pagination metadata with data for a specific page.
 
         Args:
             page (int): The page number to retrieve (1-indexed).
             page_size (int): The number of items per page.
 
         Returns:
-            Dict: A dictionary containing pagination metadata and the data for the page.
+            Dict: containing pagination metadata and data for the page.
         '''
         dataset_items = len(self.dataset())
-        
         data = self.get_page(page, page_size)
-        
         total_pages = math.ceil(dataset_items / page_size)
-        
         p = {
             "page": page,
             "page_size": page_size if page < total_pages else 0,
@@ -86,11 +80,8 @@ def index_range(page: int, page_size: int) -> Tuple[int, int]:
         page_size (int): The number of items per page.
 
     Returns:
-        Tuple[int, int]: A tuple containing the start index and end index for the page.
+        Tuple[int, int]: containing start index and end index.
     '''
     index = page * page_size - page_size
-    
     index_1 = index + page_size
-    
     return (index, index_1)
-
