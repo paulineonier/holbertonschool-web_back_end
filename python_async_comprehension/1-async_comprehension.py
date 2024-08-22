@@ -4,15 +4,20 @@ This module contains a coroutine that collects 10 random numbers
 using an asynchronous comprehension over async_generator.
 """
 
-from typing import List
-from 0_async_generator import async_generator
 
-async def async_comprehension() -> List[float]:
-    """
+from typing import List
+Vector = List[float]
+
+async_generator = __import__('0-async_generator').async_generator
+
+
+async def async_comprehension() -> Vector:
+    '''
     Coroutine that collects 10 random numbers from async_generator
     using an async comprehension.
 
     Returns:
         A list of 10 random floats.
-    """
-    return [num async for num in async_generator()]
+    '''
+    Final = [y async for y in async_generator()]
+    return Final
