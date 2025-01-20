@@ -1,39 +1,35 @@
-// 2-read_file.js
 const fs = require('fs');
 
 function countStudents(path) {
   try {
-    // Read the file synchronously
-    const data = fs.readFileSync(path, 'utf-8');
-
-    // Split file content by new line and filter out empty lines
-    const lines = data.split('\n').filter(line => line.trim().length > 0);
-
-    // Check if we have headers and at least one line of data
-    if (lines.length <= 1) {
-      throw new Error('Cannot load the database');
-    }
-
-    const header = lines[0];
-    const students = lines.slice(1);
-
-    console.log(`Number of students: ${students.length}`);
-
-    const fields = {};
-
-    students.forEach(student => {
-      const [firstname, , , field] = student.split(',');
-
-      if (!fields[field]) {
-        fields[field] = [];
+    // Lire le fichier de manière synchrone
+    const data = fs.readFileSync(path, 'utf8');
+    
+    // Séparer les lignes du fichier
+    const lines = data.split('\n').filter(line => line.trim() !== '');
+    
+    // Analyser les données dans un tableau d'objets
+    const students = {};
+    
+    lines.forEach(line => {
+      const [field, firstName] = line.split(',');
+      if (!students[field]) {
+        students[field] = [];
       }
-      fields[field].push(firstname);
+      students[field].push(firstName.trim());
     });
-
-    for (const [field, names] of Object.entries(fields)) {
+    
+    // Calcul du nombre total d'étudiants
+    const totalStudents = lines.length;
+    console.log(`Number of students: ${totalStudents}`);
+    
+    // Affichage du nombre d'étudiants par domaine et la liste des prénoms
+    Object.entries(students).forEach(([field, names]) => {
       console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
-    }
-  } catch (error) {
+    });
+    
+  } catch (err) {
+    // Si une erreur se produit (fichier introuvable ou autre)
     throw new Error('Cannot load the database');
   }
 }
