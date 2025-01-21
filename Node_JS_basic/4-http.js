@@ -1,13 +1,12 @@
-// 4-http.js
 const http = require('http');
 
-// Create an HTTP server
 const app = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello Holberton School!');
+  res.statusCode = 200; // Statut HTTP 200 (OK)
+  res.setHeader('Content-Type', 'text/plain'); // Réponse en texte brut
+  res.end('Hello Holberton School!'); // Contenu de la réponse
 });
 
-// Server listens on port 1245
+// Le serveur écoute sur le port 1245
 app.listen(1245);
 
 module.exports = app;
