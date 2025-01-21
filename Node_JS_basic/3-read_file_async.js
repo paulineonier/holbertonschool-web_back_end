@@ -1,35 +1,38 @@
-// 3-read_file_async.js
 const fs = require('fs').promises;
 
 function countStudents(path) {
-  return fs.readFile(path, 'utf-8')
+  return fs.readFile(path, 'utf8')
     .then((data) => {
-      const lines = data.split('\n').filter(line => line.trim().length > 0);
+      const lines = data.split('\n').filter(line => line.trim() !== '');
 
-      if (lines.length <= 1) {
-        throw new Error('Cannot load the database');
-      }
+      // Supprimer la ligne d'en-tête
+      const header = lines.shift(); // "firstname,lastname,age,field"
+      console.log('Header détecté :', header); // Debugging optionnel
 
-      const students = lines.slice(1); // Skip the header
-      console.log(`Number of students: ${students.length}`);
+      const students = {};
+      let totalStudents = 0;
 
-      const fields = {};
+      lines.forEach((line) => {
+        const parts = line.split(',');
 
-      students.forEach(student => {
-        const [firstname, , , field] = student.split(',');
+        if (parts.length === 4) { // Vérifie qu'il y a bien 4 colonnes
+          const field = parts[3].trim(); // Domaine d'étude
+          const firstName = parts[0].trim(); // Prénom
 
-        if (!fields[field]) {
-          fields[field] = [];
+          if (!students[field]) {
+            students[field] = [];
+          }
+          students[field].push(firstName);
+          totalStudents += 1; // Compte l'étudiant
         }
-        fields[field].push(firstname);
       });
 
-      // Log the number of students per field and the list of first names
-      for (const [field, names] of Object.entries(fields)) {
+      console.log(`Number of students: ${totalStudents}`);
+      Object.entries(students).forEach(([field, names]) => {
         console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
-      }
+      });
     })
-    .catch(() => {
+    .catch((err) => {
       throw new Error('Cannot load the database');
     });
 }
