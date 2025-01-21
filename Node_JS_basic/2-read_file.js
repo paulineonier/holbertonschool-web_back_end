@@ -2,34 +2,37 @@ const fs = require('fs');
 
 function countStudents(path) {
   try {
-    // Lire le fichier de manière synchrone
     const data = fs.readFileSync(path, 'utf8');
-    
-    // Séparer les lignes du fichier
     const lines = data.split('\n').filter(line => line.trim() !== '');
-    
-    // Analyser les données dans un tableau d'objets
+
+    // Supprimer la ligne d'en-tête
+    const header = lines.shift(); // "firstname,lastname,age,field"
+    console.log('Header détecté :', header); // Debugging optionnel
+
     const students = {};
-    
+    let totalStudents = 0;
+
     lines.forEach(line => {
-      const [field, firstName] = line.split(',');
-      if (!students[field]) {
-        students[field] = [];
+      const parts = line.split(',');
+
+      if (parts.length === 4) { // Vérifie qu'il y a bien 4 colonnes
+        const field = parts[3].trim(); // Domaine d'étude
+        const firstName = parts[0].trim(); // Prénom
+
+        if (!students[field]) {
+          students[field] = [];
+        }
+        students[field].push(firstName);
+        totalStudents += 1; // Compte l'étudiant
       }
-      students[field].push(firstName.trim());
     });
-    
-    // Calcul du nombre total d'étudiants
-    const totalStudents = lines.length;
+
     console.log(`Number of students: ${totalStudents}`);
-    
-    // Affichage du nombre d'étudiants par domaine et la liste des prénoms
     Object.entries(students).forEach(([field, names]) => {
       console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
     });
-    
+
   } catch (err) {
-    // Si une erreur se produit (fichier introuvable ou autre)
     throw new Error('Cannot load the database');
   }
 }
