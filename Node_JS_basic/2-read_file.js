@@ -5,25 +5,24 @@ function countStudents(path) {
     const data = fs.readFileSync(path, 'utf8');
     const lines = data.split('\n').filter(line => line.trim() !== '');
 
-    // Supprimer la ligne d'en-tête
-    const header = lines.shift(); // "firstname,lastname,age,field"
-    console.log('Header détecté :', header); // Debugging optionnel
+    const header = lines.shift();
+    console.log('Header détecté :', header);
 
     const students = {};
     let totalStudents = 0;
 
-    lines.forEach(line => {
-      const parts = line.split(',');
+    lines.forEach((line) => {
+      const [firstName, , , field] = line.split(',');
 
-      if (parts.length === 4) { // Vérifie qu'il y a bien 4 colonnes
-        const field = parts[3].trim(); // Domaine d'étude
-        const firstName = parts[0].trim(); // Prénom
+      if (field) {
+        const fieldTrimmed = field.trim();
+        const firstNameTrimmed = firstName.trim();
 
-        if (!students[field]) {
-          students[field] = [];
+        if (!students[fieldTrimmed]) {
+          students[fieldTrimmed] = [];
         }
-        students[field].push(firstName);
-        totalStudents += 1; // Compte l'étudiant
+        students[fieldTrimmed].push(firstNameTrimmed);
+        totalStudents += 1;
       }
     });
 
