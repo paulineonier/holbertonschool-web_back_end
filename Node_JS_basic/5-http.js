@@ -1,37 +1,67 @@
 const http = require('http');
-const fs = require('fs').promises;
+const fs = require('fs');
+const { promisify } = require('util');
+const readFile = promisify(fs.readFile);
 
-const hostname = '127.0.0.1';
-const port = 1245;
+// Chemin du fichier CSV
+const DATABASE_PATH = './database.csv';
 
-const countStudents = async (path) => {
+// Fonction pour lire et traiter la base de données
+async function countStudents(path) {
   try {
-    const data = await fs.readFile(path, 'utf8');
-    // ...traitement des données
-  } catch (err) {
+    const data = await readFile(path, 'utf8');
+    const lines = data.split('\n').filter((line) => line.trim() !== '');
+    const students = lines.slice(1); // Ignore l'en-tête
+    const total = students.length;
+
+    const fields = {};
+    students.forEach((student) => {
+      const [firstname, , , field] = student.split(',');
+      if (field) {
+        if (!fields[field]) {
+          fields[field] = [];
+        }
+        fields[field].push(firstname);
+      }
+    });
+
+    let output = `Number of students: ${total}`;
+    for (const [field, names] of Object.entries(fields)) {
+      output += `\nNumber of students in ${field}: ${names.length}. List: ${names.join(', ')}`;
+    }
+
+    return output;
+  } catch (error) {
     throw new Error('Cannot load the database');
   }
-};
+}
 
+// Création du serveur
 const app = http.createServer(async (req, res) => {
   if (req.url === '/') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
     res.write('This is the list of our students\n');
     try {
-      await countStudents('path/to/database.csv');
-      // ...affichage des étudiants
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.write('Cannot load the database\n');
-    } finally {
-      res.end();
+      const studentData = await countStudents(DATABASE_PATH);
+      res.end(studentData);
+    } catch (error) {
+      res.statusCode = 500;
+      res.end(error.message);
     }
+  } else {
+    res.statusCode = 404;
+    res.end('Not Found');
   }
 });
 
-app.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+// Écoute sur le port 1245
+app.listen(1245, () => {
+  console.log('Server running at http://localhost:1245/');
 });
+
+module.exports = app;
