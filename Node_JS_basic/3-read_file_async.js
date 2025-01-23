@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 function countStudents(path) {
   return fs.readFile(path, 'utf8')
     .then((data) => {
-      const lines = data.split('\n').filter(line => line.trim() !== '');
+      const lines = data.split('\n').filter((line) => line.trim() !== '');
 
       // Supprimer la ligne d'en-tête
       const header = lines.shift(); // "firstname,lastname,age,field"
@@ -32,7 +32,7 @@ function countStudents(path) {
         console.log(`Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`);
       });
     })
-    .catch((err) => {
+    .catch(() => {
       throw new Error('Cannot load the database');
     });
 }
